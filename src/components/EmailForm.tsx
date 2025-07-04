@@ -38,6 +38,7 @@ export default function EmailForm() {
 
     try {
       const res = await axios.post("/api/send-otp", { email: data.email });
+      localStorage.setItem("otpToken", res.data.otpToken);
 
       if (res.data.success) {
         toast.success("OTP sent to your email!", { id: loading });
@@ -57,9 +58,11 @@ export default function EmailForm() {
     setIsVerifyingOtp(true);
 
     try {
+      const otpToken = localStorage.getItem("otpToken");
       const res = await axios.post("/api/verify-otp", {
         email,
         otp,
+        otpToken,
       });
 
       if (res.data.success) {
