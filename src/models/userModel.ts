@@ -1,11 +1,93 @@
-import  { Schema, Document, models, model } from 'mongoose';
+
+// import { Schema, model, models, Document } from 'mongoose';
+
+// export interface DayPlan {
+//   day: number;
+//   title: string;
+//   reading: string;
+//   mcq: {
+//     question: string;
+//     options: string[];
+//     answer: string;
+//   }[];
+// }
+
+// export interface CurrentPlan {
+//   topic: string;
+//   currentDay: number;
+//   plan: DayPlan[];
+// }
+
+
+
+// export interface IUser extends Document {
+//   email: string;
+//   name?: string;
+//   occupation?: string;
+//   currPlan?: CurrentPlan;
+//   completedMcqs: Map<number, number>;
+//   milestones: string;
+//   league: 'Ivory' | 'Silver' | 'Gold' | 'Platinum' | 'None';
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
+
+// const userSchema = new Schema<IUser>(
+//   {
+//     email: { type: String, required: true, unique: true },
+//     name: { type: String },
+//     occupation: { type: String },
+//     currPlan: {
+//       topic: String,
+//       currentDay: { type: Number, default: 1 },
+//       plan: [
+//         {
+//           day: Number,
+//           title: String,
+//           reading: String,
+//           mcq: [
+//             {
+//               question: String,
+//               options: [String],
+//               answer: String,
+//             },
+//           ],
+//         },
+//       ],
+//     },
+//     completedMcqs: {
+//       type: Map,
+//       of: Number,
+//       default: {},
+//     },
+//     milestones: [
+//       {
+//         title: String,
+//         number: Number,
+//       },
+//     ],
+//     league: {
+//       type: String,
+//       enum: ['Ivory', 'Silver', 'Gold', 'Platinum', 'None'],
+//       default: 'None',
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+// export default models.User || model<IUser>('User', userSchema);
+import { Schema, model, models, Document } from 'mongoose';
 
 export interface DayPlan {
   day: number;
   title: string;
   reading: string;
-  ytLinks: string[];
-  mcq: string[];
+  mcq: {
+    question: string;
+    options: string[];
+    answer: string;
+  }[];
+  isCompleted: boolean;
 }
 
 export interface CurrentPlan {
@@ -16,12 +98,10 @@ export interface CurrentPlan {
 
 export interface IUser extends Document {
   email: string;
-  verified: boolean;
   name?: string;
-//   age?: number;
   occupation?: string;
   currPlan?: CurrentPlan;
-  milestones: number;
+  milestones: string;
   league: 'Ivory' | 'Silver' | 'Gold' | 'Platinum' | 'None';
   createdAt: Date;
   updatedAt: Date;
@@ -30,24 +110,28 @@ export interface IUser extends Document {
 const userSchema = new Schema<IUser>(
   {
     email: { type: String, required: true, unique: true },
-    // verified: { type: Boolean, default: false },
     name: { type: String },
-    // age: { type: Number },
     occupation: { type: String },
     currPlan: {
-      topic: { type: String },
+      topic: String,
       currentDay: { type: Number, default: 1 },
       plan: [
         {
-          day: { type: Number },
-          title: { type: String },
-          reading: { type: String },
-          ytLinks: [{ type: String }],
-          mcq: [{ type: String }],
+          day: Number,
+          title: String,
+          reading: String,
+          mcq: [
+            {
+              question: String,
+              options: [String],
+              answer: String,
+            },
+          ],
+          isCompleted: { type: Boolean, default: false },
         },
       ],
     },
-    milestones: { type: Number, default: 0 },
+    milestones: { type: String, default: '' },
     league: {
       type: String,
       enum: ['Ivory', 'Silver', 'Gold', 'Platinum', 'None'],
