@@ -131,7 +131,7 @@ export default function HomePage() {
         </div>
 
         <main className="mt-20">
-          {/* <LearningPage /> */}
+          <LearningPage />
           <UserProfile />
         </main>
       </div>

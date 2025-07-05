@@ -1,0 +1,1 @@
+export const GROQ_KEY = process.env.NEXT_PUBLIC_GROQ_KEY!;
