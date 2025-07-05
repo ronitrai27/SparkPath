@@ -102,7 +102,7 @@ export default function HomePage() {
           {suggestions.map((s, i) => (
             <div
               key={i}
-              className="min-w-[250px] bg-white/30 rounded-2xl shadow-md px-4 py-2 border border-gray-200 font-inter  text-center"
+              className="min-w-[250px] bg-gray-200/30 rounded-2xl shadow-md px-4 py-2 border border-gray-200 font-inter  text-center"
             >
               <h3 className="text-base font-light leading-tight text-gray-800 tracking-tight">
                 {s}
@@ -112,7 +112,7 @@ export default function HomePage() {
         </div>
 
         {/* INPUT----------------- */}
-        <div className="bg-gray-200/80 rounded-full px-3 py-3 flex items-center justify-between my-10 max-w-[600px] mx-auto">
+        <div className="bg-gray-200/80 rounded-full px-3 py-3 flex items-center justify-between mt-12 mb-10 max-w-[600px] mx-auto">
           <input
             type="text"
             placeholder="Ask me anything..."
@@ -137,12 +137,4 @@ export default function HomePage() {
       </div>
     </div>
   );
-}
-
-{
-  /* <h1 className="text-2xl font-bold mb-2">Welcome back, {user.name}!</h1>
-      <p>Email: {user.email}</p>
-      <p>Occupation: {user.occupation}</p>
-      <p>League: {user.league}</p>
-      <p>Milestones: {user.milestones}</p> */
 }

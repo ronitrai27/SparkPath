@@ -131,7 +131,7 @@ const UserProfile = () => {
                 href={vid.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-3 bg-white/30 p-2 rounded shadow"
+                className="flex items-center max-[500px]:flex-col max-[500px]:gap-4 space-x-3 bg-white/30 p-2 rounded-lg shadow"
               >
                 <img
                   src={vid.thumbnail}
@@ -139,10 +139,10 @@ const UserProfile = () => {
                   className="w-52 rounded"
                 />
                 <div>
-                  <p className="text-rose-500 font-medium font-inter text-base">
+                  <p className="text-rose-500 font-medium font-inter text-base max-[500px]:text-center">
                     {vid.title}
                   </p>
-                  <p className="text-sm text-gray-500 font-inter">
+                  <p className="text-sm text-gray-500 font-inter max-[500px]:text-center">
                     by {vid.channel}
                   </p>
                 </div>
