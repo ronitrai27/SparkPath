@@ -117,7 +117,7 @@ export default function EmailForm() {
           SPARK<span className="text-rose-500">PATH</span>
         </h1>
         <p className="z-10 relative font-inter text-gray-400 font-medium text-2xl max-[500px]:text-xl  text-center mb-10 max-w-[500px] mx-auto">
-          AI powered learning platform to ignite your idea, Passion into 7 day
+          AI powered learning platform to ignite your idea, Passion into 3 day
           skill adventure.
         </p>
 
