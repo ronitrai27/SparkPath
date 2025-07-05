@@ -5,7 +5,6 @@
 
 import { useEffect, useState } from "react";
 import { getOccupationSuggestions } from "@/lib/Suggestions";
-import AppTour from "@/components/AppTour";
 import Orb from "@/components/Orb";
 import { useSpeech } from "@/lib/useSpeech";
 import { useAppContext } from "@/context/AppContext";
@@ -17,6 +16,7 @@ import { IoMicOutline } from "react-icons/io5";
 import { is } from "date-fns/locale";
 import { useAIContext } from "@/context/AIcontext";
 import toast from "react-hot-toast";
+import { useTour } from "@reactour/tour";
 export default function HomePage() {
   const { user, loading } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -42,6 +42,17 @@ export default function HomePage() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSubmit();
   };
+  // ---------------------------TOUR-----------------------------
+  const { setIsOpen } = useTour();
+
+  useEffect(() => {
+    const isNewUser = localStorage.getItem("newuserRide");
+
+    if (isNewUser === "true") {
+      setIsOpen(true); // Start the tour
+      localStorage.setItem("newuserRide", "false"); // Prevent auto-start again
+    }
+  }, [setIsOpen]);
 
   //----------------- TYPE WRITER FOR DYNAMIC HEADING -------------------------
   const greetings = [
@@ -122,7 +133,6 @@ export default function HomePage() {
 
   return (
     <div className="bg-gradient-to-b from-white via-rose-50 to-rose-300 min-h-screen w-full p-4 ">
-      <AppTour />
       <div className="max-w-[1200px] mx-auto">
         {loading ? (
           <>
