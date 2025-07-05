@@ -13,6 +13,7 @@ import {
 } from "react-icons/lu";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 interface HeroNavProps {
   toggleSidebar: () => void;
   isSidebarOpen: boolean;
@@ -23,6 +24,16 @@ const Homenav: React.FC<HeroNavProps> = ({ toggleSidebar, isSidebarOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const handleLogout = async () => {
+    await fetch("/api/logout", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    router.push("/");
+    toast.success("Logged out successfully!");
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -128,7 +139,7 @@ const Homenav: React.FC<HeroNavProps> = ({ toggleSidebar, isSidebarOpen }) => {
 
                 <button
                   type="button"
-                  // onClick={handleLogout}
+                  onClick={handleLogout}
                   className="w-fit text-left text-[16px] font-sora font-medium text-white bg-rose-500 hover:bg-pink-600 px-3 py-2 rounded-xl flex items-center gap-2"
                 >
                   <LuLogOut size={18} />

@@ -8,7 +8,7 @@ import { getOccupationSuggestions } from "@/lib/Suggestions";
 import Orb from "@/components/Orb";
 import { useSpeech } from "@/lib/useSpeech";
 import { useAppContext } from "@/context/AppContext";
-import { LuBell } from "react-icons/lu";
+import { LuBell, LuMic, LuMicOff } from "react-icons/lu";
 import styled from "styled-components";
 import UserProfile from "@/components/Test";
 import { LuArrowUpRight } from "react-icons/lu";
@@ -20,9 +20,10 @@ import { useTour } from "@reactour/tour";
 export default function HomePage() {
   const { user, loading } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
-  const { generatePlan } = useAIContext();
+  const { generatePlan, topic, setTopic, isListening, toggleListening } =
+    useAIContext();
   const suggestions = getOccupationSuggestions(user?.occupation || "Other");
-  const [topic, setTopic] = useState("");
+  // const [topic, setTopic] = useState("");
   const userPlan = user?.currPlan?.plan || [];
 
   const isPlanComplete = userPlan.every((day: any) => day?.isCompleted);
@@ -32,11 +33,23 @@ export default function HomePage() {
 
     if (!isPlanComplete) {
       toast.error("Finish your current plan First!");
+      speak("Finish your current plan First! and then u may procced further.", {
+        rate: 1,
+        pitch: 1.1,
+        lang: "en-US",
+        voiceName: "Microsoft Hazel - English (United Kingdom)",
+      });
       return;
     }
 
     generatePlan(topic, user?.name || "User", user?.email || "");
     setTopic("");
+    speak("Great Work , lemt me just quickly summarize your plan", {
+      rate: 1,
+      pitch: 1.1,
+      lang: "en-US",
+      voiceName: "Microsoft Hazel - English (United Kingdom)",
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -185,21 +198,43 @@ export default function HomePage() {
             </div>
           )}
         </div>
-        <p className="text-black font-light font-inter text-lg mb-4">
-          AI Suggestions:
-        </p>
-        <div className="flex gap-4 overflow-x-auto scrollbar-thin py-1 suggest-rider">
-          {suggestions.map((s, i) => (
-            <div
-              key={i}
-              className="min-w-[250px] bg-gray-200/30 rounded-2xl shadow-md px-4 py-2 border border-gray-200 font-inter  text-center"
-            >
-              <h3 className="text-base font-light leading-tight text-gray-800 tracking-tight">
-                {s}
-              </h3>
+        {/* SUGGESTIONS----------------- */}
+        {!isListening && (
+          <>
+            <p className="text-black font-light font-inter text-lg mb-4">
+              AI Suggestions:
+            </p>
+            <div className="flex gap-4 overflow-x-auto scrollbar-thin py-1 suggest-rider">
+              {suggestions.map((s, i) => (
+                <div
+                  key={i}
+                  className="min-w-[250px] bg-gray-200/30 rounded-2xl shadow-md px-4 py-2 border border-gray-200 font-inter  text-center"
+                >
+                  <h3 className="text-base font-light leading-tight text-gray-800 tracking-tight">
+                    {s}
+                  </h3>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
+
+        {isListening && (
+          <div className="my-3 flex flex-col items-center justify-center text-black transition-all duration-300">
+            <div className="relative mb-4">
+              <div className="absolute w-20 h-20 rounded-full bg-gradient-to-tr from-pink-500 to-indigo-500 blur-lg opacity-50 animate-ping"></div>
+              <div className="relative w-16 h-16 bg-gray-700 text-white rounded-full flex items-center justify-center shadow-lg">
+                <LuMic size={28} />
+              </div>
+            </div>
+            <p className="text-lg font-sora animate-fadeIn">
+              I&apos;m listening... 🎧
+            </p>
+            <span className="text-sm text-gray-600 mt-1 animate-fadeIn delay-200">
+              Just talk — I&apos;ll take care of the rest.
+            </span>
+          </div>
+        )}
 
         {/* INPUT----------------- */}
         <div className="bg-gray-200/80 rounded-full px-3 py-3 flex items-center justify-between mt-12 mb-10 max-w-[600px] mx-auto">
@@ -212,10 +247,17 @@ export default function HomePage() {
             onKeyDown={handleKeyDown}
           />
           <div className="flex items-center gap-2">
-            <IoMicOutline
-              size={24}
-              className="text-gray-800 cursor-pointer hover:text-gray-600 transition-colors duration-200 mic-rider"
-            />
+            <div
+              onClick={toggleListening}
+              className="cursor-pointer px-2 text-black"
+              title={isListening ? "Stop Mic" : "Start Mic"}
+            >
+              {isListening ? (
+                <LuMicOff size={24} className="text-gray-800" />
+              ) : (
+                <LuMic size={24} className="text-gray-800" />
+              )}
+            </div>
             <LuArrowUpRight
               size={24}
               className="text-gray-800 cursor-pointer hover:text-gray-600 transition-colors duration-200 ml-2"

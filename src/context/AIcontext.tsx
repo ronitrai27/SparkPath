@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { callGroqAI } from "@/lib/GroqClient";
 import { toast } from "react-hot-toast";
 import { jsonrepair } from "jsonrepair";
 import { useAppContext } from "@/context/AppContext";
 import { GROQ_KEY } from "@/lib/GroqKey";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 export interface DayPlan {
   day: number;
@@ -50,18 +53,43 @@ interface AIContextType {
   canAccessDay: (day: number) => boolean;
   responseLoading?: boolean;
   setResponseLoading?: (loading: boolean) => void;
+  topic: string;
+  setTopic: (topic: string) => void;
+
+  isListening: boolean;
+  toggleListening: () => void;
 }
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
 
 export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const { fetchUser } = useAppContext();
+  const [topic, setTopic] = useState(""); // user prompt
   const [plan, setPlan] = useState<CurrentPlan | null>(null);
   const [currentDay, setCurrentDay] = useState<number>(1);
   const [responseLoading, setResponseLoading] = useState(false);
   const [completedMcqs, setCompletedMcqs] = useState<Record<number, number>>(
     {}
   );
+
+  const { transcript, listening, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
+
+  const toggleListening = () => {
+    if (!browserSupportsSpeechRecognition) {
+      alert("Your browser does not support speech recognition.");
+      return;
+    }
+    if (listening) {
+      SpeechRecognition.stopListening();
+    } else {
+      SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+    }
+  };
+
+  useEffect(() => {
+    setTopic(transcript);
+  }, [transcript]);
 
   const generatePlan = async (topic: string, name: string, email: string) => {
     console.log("Generating plan for topic:", topic, "and name:", name);
@@ -159,6 +187,10 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         canAccessDay,
         responseLoading,
         setResponseLoading,
+        topic,
+        setTopic,
+        isListening: listening,
+        toggleListening,
       }}
     >
       {children}
