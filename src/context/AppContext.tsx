@@ -30,7 +30,7 @@ interface User {
   name?: string;
   occupation?: string;
   currPlan?: CurrentPlan;
-  milestones: string;
+  milestones: string[]; // Changed from [string] to string[]
   league: "Ivory" | "Silver" | "Gold" | "Platinum" | "None";
   createdAt: string;
   updatedAt: string;

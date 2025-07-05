@@ -2,7 +2,7 @@
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
-export type GroqMode =  'general_q'| 'learning_outline' | 'learning_mcq';
+export type GroqMode =  'question_q'| 'learning_outline' | 'learning_mcq';
 // export type GroqMode = 'learning_outline' | 'learning_mcq';
 
 
@@ -92,6 +92,8 @@ Return like:
 ]
 `;
   break;
+
+ 
 
     default:
       throw new Error('Invalid Groq mode');

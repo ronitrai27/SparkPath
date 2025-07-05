@@ -48,6 +48,8 @@ interface AIContextType {
   generatePlan: (topic: string, name: string, email: string) => Promise<void>;
   markMcqCompleted: (day: number) => void;
   canAccessDay: (day: number) => boolean;
+  responseLoading?: boolean;
+  setResponseLoading?: (loading: boolean) => void;
 }
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
@@ -56,12 +58,14 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const { fetchUser } = useAppContext();
   const [plan, setPlan] = useState<CurrentPlan | null>(null);
   const [currentDay, setCurrentDay] = useState<number>(1);
+  const [responseLoading, setResponseLoading] = useState(false);
   const [completedMcqs, setCompletedMcqs] = useState<Record<number, number>>(
     {}
   );
 
   const generatePlan = async (topic: string, name: string, email: string) => {
     console.log("Generating plan for topic:", topic, "and name:", name);
+    setResponseLoading(true); // Start loading
 
     try {
       toast.loading("Generating outline...");
@@ -120,9 +124,11 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
 
       toast.dismiss();
       toast.success("✅ Plan generated & saved!");
+      setResponseLoading(false); // Stop loading
     } catch (err: any) {
       toast.dismiss();
       toast.error("❌ Failed to generate or save plan.");
+      setResponseLoading(false); // Stop loading
       console.error("Generate Plan Error:", err);
     }
   };
@@ -151,6 +157,8 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         markMcqCompleted,
         setCurrentDay,
         canAccessDay,
+        responseLoading,
+        setResponseLoading,
       }}
     >
       {children}

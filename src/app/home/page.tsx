@@ -5,18 +5,43 @@
 
 import { useEffect, useState } from "react";
 import { getOccupationSuggestions } from "@/lib/Suggestions";
-
+import AppTour from "@/components/AppTour";
 import Orb from "@/components/Orb";
+import { useSpeech } from "@/lib/useSpeech";
 import { useAppContext } from "@/context/AppContext";
 import { LuBell } from "react-icons/lu";
-// import HomePage2 from "@/components/Test";
-import LearningPage from "@/components/LearningPage";
+import styled from "styled-components";
 import UserProfile from "@/components/Test";
 import { LuArrowUpRight } from "react-icons/lu";
 import { IoMicOutline } from "react-icons/io5";
+import { is } from "date-fns/locale";
+import { useAIContext } from "@/context/AIcontext";
+import toast from "react-hot-toast";
 export default function HomePage() {
   const { user, loading } = useAppContext();
+  const { speak, isSpeaking } = useSpeech();
+  const { generatePlan } = useAIContext();
   const suggestions = getOccupationSuggestions(user?.occupation || "Other");
+  const [topic, setTopic] = useState("");
+  const userPlan = user?.currPlan?.plan || [];
+
+  const isPlanComplete = userPlan.every((day: any) => day?.isCompleted);
+
+  const handleSubmit = () => {
+    if (!topic.trim()) return;
+
+    if (!isPlanComplete) {
+      toast.error("Finish your current plan First!");
+      return;
+    }
+
+    generatePlan(topic, user?.name || "User", user?.email || "");
+    setTopic("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSubmit();
+  };
 
   //----------------- TYPE WRITER FOR DYNAMIC HEADING -------------------------
   const greetings = [
@@ -54,8 +79,50 @@ export default function HomePage() {
     }
   }, [index, fullText]);
 
+  const orbResponses = [
+    "Do you want to learn new topics? I'm here to help!",
+    "I'm your friend, i will help you to learn new topics.",
+    "Let's start working and grinding together.",
+    "Did you click me by mistake? No worries, I'm here to help!",
+    "Something on your mind? just ask and get things done",
+  ];
+
+  const handleOrbClick = () => {
+    if (isSpeaking) return;
+
+    const message =
+      orbResponses[Math.floor(Math.random() * orbResponses.length)];
+
+    speak(message, {
+      rate: 1,
+      pitch: 1.1,
+      lang: "en-US",
+      voiceName: "Microsoft Hazel - English (United Kingdom)",
+    });
+  };
+
+  useEffect(() => {
+    if (isSpeaking || !user) return;
+
+    const orbShouldSpeak = localStorage.getItem("orbShouldSpeak");
+    if (orbShouldSpeak === "true") {
+      const message = `Welcome ${user.name}, I'm your personal learning assistant. I'm here to help you learn new topics and improve your skills. Just tell me what you want to learn, and I'll create a 3-day plan with the best resources.`;
+
+      speak(message, {
+        rate: 1,
+        pitch: 1.1,
+        lang: "en-US",
+        voiceName: "Microsoft Hazel - English (United Kingdom)",
+      });
+
+      // prevent speaking again
+      localStorage.setItem("orbShouldSpeak", "false");
+    }
+  }, [user, isSpeaking]);
+
   return (
     <div className="bg-gradient-to-b from-white via-rose-50 to-rose-300 min-h-screen w-full p-4 ">
+      <AppTour />
       <div className="max-w-[1200px] mx-auto">
         {loading ? (
           <>
@@ -79,8 +146,8 @@ export default function HomePage() {
         )}
         {/* ORB---------------- */}
         <div
-          style={{ width: "100%", height: "370px", position: "relative" }}
-          className="-mt-5"
+          onClick={handleOrbClick}
+          className="-mt-5 orb-rider w-fit mx-auto max-[500px]:scale-110 scale-125 relative  h-[370px] cursor-pointer"
         >
           <Orb
             hoverIntensity={0.5}
@@ -88,17 +155,30 @@ export default function HomePage() {
             hue={272}
             forceHoverState={false}
           />
-
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <h2 className="text-4xl font-semibold font-sora bg-gradient-to-r from-black to-rose-600 bg-clip-text text-transparent tracking-tight text-center">
-              ASK ME{" "}
-            </h2>
-          </div>
+          {isSpeaking ? (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <StyledWrapper>
+                <div className="loading">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </StyledWrapper>
+            </div>
+          ) : (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <h2 className="text-4xl font-semibold font-sora bg-gradient-to-r from-black to-rose-600 bg-clip-text text-transparent tracking-tight text-center">
+                ASK ME{" "}
+              </h2>
+            </div>
+          )}
         </div>
         <p className="text-black font-light font-inter text-lg mb-4">
           AI Suggestions:
         </p>
-        <div className="flex gap-4 overflow-x-auto scrollbar-thin py-1">
+        <div className="flex gap-4 overflow-x-auto scrollbar-thin py-1 suggest-rider">
           {suggestions.map((s, i) => (
             <div
               key={i}
@@ -116,25 +196,84 @@ export default function HomePage() {
           <input
             type="text"
             placeholder="Ask me anything..."
-            className="w-full bg-transparent outline-none text-gray-800 font-inter text-base placeholder:text-gray-500"
+            className="w-full bg-transparent outline-none text-gray-800 font-inter text-base placeholder:text-gray-500 input-rider"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <div className="flex items-center gap-2">
             <IoMicOutline
               size={24}
-              className="text-gray-800 cursor-pointer hover:text-gray-600 transition-colors duration-200"
+              className="text-gray-800 cursor-pointer hover:text-gray-600 transition-colors duration-200 mic-rider"
             />
             <LuArrowUpRight
               size={24}
               className="text-gray-800 cursor-pointer hover:text-gray-600 transition-colors duration-200 ml-2"
+              onClick={handleSubmit}
             />
           </div>
         </div>
 
-        <main className="mt-20">
-          <LearningPage />
+        <main className="mt-20 others-rider">
           <UserProfile />
         </main>
       </div>
     </div>
   );
 }
+const StyledWrapper = styled.div`
+  .loading {
+    --speed-of-animation: 0.9s;
+    --gap: 6px;
+    --first-color: #7b68da;
+    --second-color: #6c53e6;
+    --third-color: #7f3ce2;
+    --fourth-color: #35a4cc;
+    --fifth-color: #fff3ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    gap: 6px;
+    height: 100px;
+  }
+
+  .loading span {
+    width: 4px;
+    height: 50px;
+    background: var(--first-color);
+    animation: scale var(--speed-of-animation) ease-in-out infinite;
+  }
+
+  .loading span:nth-child(2) {
+    background: var(--second-color);
+    animation-delay: -0.8s;
+  }
+
+  .loading span:nth-child(3) {
+    background: var(--third-color);
+    animation-delay: -0.7s;
+  }
+
+  .loading span:nth-child(4) {
+    background: var(--fourth-color);
+    animation-delay: -0.6s;
+  }
+
+  .loading span:nth-child(5) {
+    background: var(--fifth-color);
+    animation-delay: -0.5s;
+  }
+
+  @keyframes scale {
+    0%,
+    40%,
+    100% {
+      transform: scaleY(0.05);
+    }
+
+    20% {
+      transform: scaleY(1);
+    }
+  }
+`;

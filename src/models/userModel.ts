@@ -10,6 +10,7 @@
 //     options: string[];
 //     answer: string;
 //   }[];
+//   isCompleted: boolean;
 // }
 
 // export interface CurrentPlan {
@@ -18,14 +19,11 @@
 //   plan: DayPlan[];
 // }
 
-
-
 // export interface IUser extends Document {
 //   email: string;
 //   name?: string;
 //   occupation?: string;
 //   currPlan?: CurrentPlan;
-//   completedMcqs: Map<number, number>;
 //   milestones: string;
 //   league: 'Ivory' | 'Silver' | 'Gold' | 'Platinum' | 'None';
 //   createdAt: Date;
@@ -52,20 +50,11 @@
 //               answer: String,
 //             },
 //           ],
+//           isCompleted: { type: Boolean, default: false },
 //         },
 //       ],
 //     },
-//     completedMcqs: {
-//       type: Map,
-//       of: Number,
-//       default: {},
-//     },
-//     milestones: [
-//       {
-//         title: String,
-//         number: Number,
-//       },
-//     ],
+//     milestones: { type: String, default: '' },
 //     league: {
 //       type: String,
 //       enum: ['Ivory', 'Silver', 'Gold', 'Platinum', 'None'],
@@ -76,6 +65,7 @@
 // );
 
 // export default models.User || model<IUser>('User', userSchema);
+
 import { Schema, model, models, Document } from 'mongoose';
 
 export interface DayPlan {
@@ -101,7 +91,7 @@ export interface IUser extends Document {
   name?: string;
   occupation?: string;
   currPlan?: CurrentPlan;
-  milestones: string;
+  milestones: string[];
   league: 'Ivory' | 'Silver' | 'Gold' | 'Platinum' | 'None';
   createdAt: Date;
   updatedAt: Date;
@@ -131,7 +121,7 @@ const userSchema = new Schema<IUser>(
         },
       ],
     },
-    milestones: { type: String, default: '' },
+    milestones: { type: [String], default: [] },
     league: {
       type: String,
       enum: ['Ivory', 'Silver', 'Gold', 'Platinum', 'None'],

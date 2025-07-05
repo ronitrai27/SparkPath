@@ -93,11 +93,12 @@ export default function Component() {
           occupation: profileData.occupation,
         });
 
-        // console.log("✅API response:", res.data);
+        // console.log("API response:", res.data);
 
         if (res.data.success) {
           toast.success("Profile completed successfully!");
-
+          localStorage.setItem("newuserRide", "true"); //ride
+          localStorage.setItem("orbShouldSpeak", "true"); //orb
           const interval = setInterval(() => {
             setCountdown((prev) => {
               if (prev === 1) {
