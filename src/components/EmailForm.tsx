@@ -71,7 +71,7 @@ export default function EmailForm() {
         if (res.data.status === "new") {
           router.push("/profile-complete");
         } else {
-          router.push("/dashboard");
+          router.push("/home");
         }
       } else {
         toast.error(res.data.error || "Invalid OTP", { id: loading });
