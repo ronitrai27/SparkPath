@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 SparkPath
 
-## Getting Started
+**SparkPath** is an AI-powered learning platform that helps users break down any course or topic into a 3-day structured plan. With interactive features like an AI chatbot orb, YouTube-integrated learning, and daily MCQ tests — SparkPath makes learning focused, efficient, and engaging.
 
-First, run the development server:
+🌐 **Live App:** [https://spark-path-three.vercel.app/](https://spark-path-three.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 🧠 **AI-Powered 3-Day Plan Generator:** Uses Groq AI to intelligently break down any course/topic into a 3-day learning roadmap.
+- 🎥 **YouTube API Integration:** Automatically fetches relevant YouTube videos for each learning day.
+- 💬 **AI Orb Chat Assistant:** Interact with a floating AI orb that guides and converses with you throughout your learning journey.
+- 🎙️ **Speech-to-Text Input:** Speak instead of typing — your speech is converted to text in real time.
+- 📝 **Daily MCQ Practice:** Test your understanding with auto-generated multiple-choice questions for each day.
+- 🏆 **Leaderboard System:** Compare your progress with others and stay motivated through gamified ranking.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+| Layer       | Technologies Used                                    |
+|-------------|------------------------------------------------------|
+| Frontend    | React, Next.js, Tailwind CSS, Shadcn UI, Framer Motion |
+| Backend     | MongoDB (via Mongoose)                               |
+| APIs Used   | Groq AI, YouTube Data API, Wikipedia API             |
+| Tools       | Vercel (Deployment), pnpm (Package Manager)          |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📦 How to Use Locally
 
-## Deploy on Vercel
+1. **Clone the repository:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   git clone https://github.com/your-username/sparkpath.git
+   cd sparkpath
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+---IMAGES---
+<img src="/public/show.png" alt="Home Page" width="100%" /> <br /> <img src="/public/show2.png" alt="Learning Interface" width="100%" /> <br /> <img src="/public/show3.png" alt="MCQ Test" width="100%" />
