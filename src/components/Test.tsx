@@ -13,8 +13,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useAIContext } from "@/context/AIcontext";
 import styled from "styled-components";
+import { useFireworks } from "@/lib/Fireworks";
+
 const UserProfile = () => {
   const { user, setUser, loading } = useAppContext();
+  const { triggerFireworks } = useFireworks();
   const { responseLoading } = useAIContext();
   const currentDayPlan = user?.currPlan?.plan.find(
     (dayPlan) => dayPlan.day === user?.currPlan?.currentDay
@@ -29,7 +32,65 @@ const UserProfile = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [newMilestone, setNewMilestone] = useState<string | null>(null);
 
-  // Fetch YouTube videos
+  // ---------------------WIKIPEDIA---------------------
+  const [wikiSummary, setWikiSummary] = useState<string | null>(null);
+  const [loadingWiki, setLoadingWiki] = useState(false);
+  const [wikiError, setWikiError] = useState<string | null>(null);
+
+  const fetchWikiSummary = async () => {
+    setLoadingWiki(true);
+    setWikiError(null);
+
+    const originalTitle = currentDayPlan?.title ?? "";
+    if (!originalTitle.trim()) {
+      setWikiSummary("No topic title provided.");
+      setLoadingWiki(false);
+      return;
+    }
+
+    const fallbackTitle = originalTitle.split(" ").slice(-2).join(" ");
+    console.log(
+      "Fetching Wikipedia summary for:",
+      originalTitle,
+      fallbackTitle
+    );
+
+    try {
+      const tryFetch = async (title: string) => {
+        const res = await axios.get(
+          `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(
+            title
+          )}`
+        );
+        return res.data.extract;
+      };
+
+      let summary: string | null = null;
+
+      try {
+        summary = await tryFetch(originalTitle);
+      } catch {
+        try {
+          summary = await tryFetch(fallbackTitle);
+        } catch {
+          summary = null;
+        }
+      }
+
+      if (summary) {
+        setWikiSummary(summary);
+      } else {
+        setWikiSummary("No Wikipedia page found for this topic. ");
+      }
+    } catch (error) {
+      console.error("Wikipedia fetch failed", error);
+      setWikiError("Couldn't fetch Wikipedia summary.");
+    } finally {
+      setLoadingWiki(false);
+    }
+  };
+
+  // ------------------Fetch YouTube videos-------------------------
   useEffect(() => {
     const getVideos = async () => {
       if (currentDayPlan?.title) {
@@ -55,7 +116,7 @@ const UserProfile = () => {
         setSuggestedTopics(topics);
         setIsLoadingSuggestions(false);
       } else {
-        setSuggestedTopics([]); // Clear suggestions if conditions not met
+        setSuggestedTopics([]);
         setShowPopup(false); // Hide popup if plan is not completed or no milestones
       }
     };
@@ -205,7 +266,7 @@ const UserProfile = () => {
           )}
         </AnimatePresence>
 
-        {/* Popup for new milestone */}
+        {/* -------Popup for new milestone ------------------*/}
         <AnimatePresence>
           {showPopup && (
             <>
@@ -238,8 +299,17 @@ const UserProfile = () => {
                     You just completed your Milestone! You can view yourself in
                     leaderboard.
                   </p>
-                  <button
+                  {/* <button
                     onClick={() => setShowPopup(false)}
+                    className="px-6 py-2 bg-white text-rose-500 rounded-full font-inter text-base hover:bg-rose-800"
+                  >
+                    OK
+                  </button> */}
+                  <button
+                    onClick={() => {
+                      triggerFireworks();
+                      setShowPopup(false);
+                    }}
                     className="px-6 py-2 bg-white text-rose-500 rounded-full font-inter text-base hover:bg-rose-800"
                   >
                     OK
@@ -340,6 +410,89 @@ const UserProfile = () => {
           <p className="font-inter text-base font-medium text-center max-w-[800px] mx-auto">
             {currentDayPlan.reading}
           </p>
+          {/*----- WIKIPEDIA--------- */}
+          <div className="text-center my-4">
+            <button
+              onClick={fetchWikiSummary}
+              className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-4 py-2 rounded-full transition"
+              disabled={loadingWiki}
+            >
+              {loadingWiki ? "Fetching..." : "Learn More"}
+            </button>
+
+            {loadingWiki && (
+              <div className="flex items-center justify-center my-4">
+                <StyledWrapper>
+                  <svg
+                    className="pl"
+                    width={240}
+                    height={240}
+                    viewBox="0 0 240 240"
+                  >
+                    <circle
+                      className="pl__ring pl__ring--a"
+                      cx={120}
+                      cy={120}
+                      r={105}
+                      fill="none"
+                      stroke="#000"
+                      strokeWidth={20}
+                      strokeDasharray="0 660"
+                      strokeDashoffset={-330}
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      className="pl__ring pl__ring--b"
+                      cx={120}
+                      cy={120}
+                      r={35}
+                      fill="none"
+                      stroke="#000"
+                      strokeWidth={20}
+                      strokeDasharray="0 220"
+                      strokeDashoffset={-110}
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      className="pl__ring pl__ring--c"
+                      cx={85}
+                      cy={120}
+                      r={70}
+                      fill="none"
+                      stroke="#000"
+                      strokeWidth={20}
+                      strokeDasharray="0 440"
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      className="pl__ring pl__ring--d"
+                      cx={155}
+                      cy={120}
+                      r={70}
+                      fill="none"
+                      stroke="#000"
+                      strokeWidth={20}
+                      strokeDasharray="0 440"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </StyledWrapper>
+              </div>
+            )}
+
+            {wikiError && (
+              <p className="text-red-500 mt-2 text-base font-inter">
+                {wikiError}
+              </p>
+            )}
+
+            {wikiSummary && (
+              <p className="mt-4 text-gray-800 text-base font-inter max-w-[800px] mx-auto">
+                {wikiSummary}
+              </p>
+            )}
+          </div>
+
           {/* YouTube Links */}
           <div className="space-y-3 mt-6">
             <h3 className="text-lg font-medium font-sora text-center mb-5 underline underline-offset-4 decoration-rose-500">
